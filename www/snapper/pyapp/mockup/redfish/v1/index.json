@@ -1,0 +1,53 @@
+{
+    "Tasks": {
+        "@odata.id": "/redfish/v1/Tasks/"
+    },
+    "Chassis": {
+        "@odata.id": "/redfish/v1/Chassis/"
+    },
+    "Id": "RootService",
+    "Links": {
+        "Sessions": {
+            "@odata.id": "/redfish/v1/SessionService/Sessions/"
+        }
+    },
+    "Managers": {
+        "@odata.id": "/redfish/v1/Managers/"
+    },
+    "EventService": {
+        "@odata.id": "/redfish/v1/EventService/"
+    },
+    "JsonSchemas": {
+        "@odata.id": "/redfish/v1/JsonSchemas/"
+    },
+    "Systems": {
+        "@odata.id": "/redfish/v1/Systems/"
+    },
+    "UpdateService": {
+        "@odata.id": "/redfish/v1/UpdateService/"
+    },
+    "Registries": {
+        "@odata.id": "/redfish/v1/Registries/"
+    },
+    "UUID": "05F2160E-DB83-11E6-A614-9105291D13C2",
+    "Name": "Root Service",
+    "RedfishVersion": "1.0.2",
+    "@odata.context": "/redfish/v1/$metadata#ServiceRoot.ServiceRoot",
+    "Oem": {
+        "Lenovo": {
+            "FirmwareServices": {
+                "@odata.id": "/redfish/v1/Oem/Lenovo/FirmwareServices/"
+            }
+        }
+    },
+    "@odata.type": "#ServiceRoot.v1_2_0.ServiceRoot",
+    "SessionService": {
+        "@odata.id": "/redfish/v1/SessionService/"
+    },
+    "@odata.id": "/redfish/v1/",
+    "@odata.etag": "W/\"8c7deb12ccb261cf6193ef00940773f3\"",
+    "AccountService": {
+        "@odata.id": "/redfish/v1/AccountService/"
+    },
+    "Description": "This resource is used to represent a service root for a Redfish implementation."
+}

@@ -1,0 +1,69 @@
+#!/bin/bash
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+select_sdk_elie()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+
+    export BMC_SDK="elie"
+
+    export BMC_SDK_DIR="${BMC_TOPDIR}/sdk"
+    export BMC_SDK_ENV="$BMC_SDK_DIR/environment-setup-i686-linux-gnueabi"
+}
+
+#--------------------------------------------------------------------------------
+preload_sdk()
+{
+    test -z "$BMC_STAGE_EXEC" && return
+    
+    test -z "$BMC_SDK" && die_red "!-> SDK option not selected"
+
+    if [ "$BMC_SDK" = "none" ]; then 
+        echo -e " ${Black}${On_Yellow} -> No preloaded SDK environment <- ${Color_Off}"
+        return
+    fi
+    
+    test -n "$BMC_SDK_PRELOADED" && return 
+
+    echo -e " ${IYellow}${On_Blue}-> Preloading SDK: $BMC_SDK from $BMC_SDK_DIR <-${Color_Off}"
+    source $BMC_SDK_ENV 
+
+    export BMC_SDK_PRELOADED=yes
+}
+
+#--------------------------------------------------------------------------------
+option_nosdk()
+{
+    test -n "$BMC_STAGE_SETUP" || return
+    
+    export BMC_SDK="none"
+}
+
+#--------------------------------------------------------------------------------
+option_elie()
+{
+    select_sdk_elie
+}
+
+#--------------------------------------------------------------------------------
+#register_help nosdk
+help_nosdk()
+{
+    print_help "nosdk"          "Do not preload any SDK environment"
+    print_help "elie"           "Preload ELIE SDK environment"
+}
+
+#--------------------------------------------------------------------------------
+register_default sdk
+default_sdk()
+{
+    test -n "$BMC_SDK" && return
+    add_darg elie
+}
+

@@ -1,0 +1,41 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+prep_component()
+{
+    test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
+    echo " -> Preparing $COMP for $BMC_BUILDARCH"
+    if [ -z "$BNP_HOOK_DIR" ]; then
+        ( cd $BMC_TOPDIR/$COMP && $BMC_TOPDIR/bnp/buildtools/prep_autotools -$BMC_BUILDARCH )
+    else
+        ( cd $BNP_HOOK_DIR && $BMC_TOPDIR/bnp/buildtools/prep_autotools -$BMC_BUILDARCH )
+    fi
+}
+
+#--------------------------------------------------------------------------------
+option_prep()
+{
+    BMC_TARGETS=true
+    
+    test -z "$BMC_STAGE_EXEC" && return
+    test -z "$BMC_COMP_LIST"  && die "!-> No components selected"
+    test -z "$BMC_BUILDARCH"  && die "!-> No arch selected"
+   
+    # must preload_sdk to make the prep_autotools running correctly
+    preload_sdk
+
+    for COMP in $BMC_COMP_LIST; do
+        prep_component
+    done
+}
+
+#--------------------------------------------------------------------------------
+register_help prep
+help_prep()
+{
+    print_help "prep" "generates all configure and Makefile files using autotools"
+}
+    

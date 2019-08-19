@@ -1,0 +1,38 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+option_x86()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    test -n "$BMC_BUILDARCH" && die "!-> You may only specify one architecture"
+    export BMC_BUILDARCH=x86
+}
+
+#--------------------------------------------------------------------------------
+option_noarch()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    test -n "$BMC_BUILDARCH" && die "!-> You may only specify one architecture"
+    export BMC_BUILDARCH=none
+}
+
+#--------------------------------------------------------------------------------
+register_default arch
+default_arch()
+{
+    test -n "$BMC_BUILDARCH" && return
+    add_darg x86
+}
+
+#--------------------------------------------------------------------------------
+register_help arch
+help_arch()
+{
+    print_help "x86"    "select x86 arch"
+    print_help "noarch" "arch is not applicable"
+}
+
+

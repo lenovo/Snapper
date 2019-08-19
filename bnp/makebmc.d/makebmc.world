@@ -1,0 +1,28 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+option_world()
+{
+    export BMC_WORLD=true
+    option_allc
+    option_allt
+}
+
+#--------------------------------------------------------------------------------
+option_world_x86()
+{
+    option_x86
+    option_world
+}
+
+#--------------------------------------------------------------------------------
+register_help world
+help_world()
+{
+    print_help "world"       "builds allc and allt for selected arch"
+    print_help "world_x86"   "builds world for x86"
+}
+

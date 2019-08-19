@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# This script will create a 'library list' file, which contains a list
+# of all libraries created by each component.  The idea is that it can
+# be used by applications during linking, to simplify the generation
+# of the long list of potential libraries to link.
+# See COMPLIBS_ variables in bmc-rules.mk for more details.
+
+#--------------------------------------------------------------------
+COMP=$1
+LIBLISTDIR=$2
+shift 2
+LIBS=$*
+
+test ! -d $LIBLISTDIR && mkdir $LIBLISTDIR
+LLFILE=$LIBLISTDIR/liblist.$COMP
+LLTMP=$LLFILE.tmp
+
+touch $LLFILE
+cp $LLFILE $LLTMP
+
+for ITEM in `echo $LIBS`; do
+    ITEM=`echo "$ITEM" | cut -b4- `
+    ITEM=`basename $ITEM .la`
+    echo "-l$ITEM" >> $LLTMP
+done
+
+sort -u $LLTMP > $LLFILE
+rm -f $LLTMP
+
+

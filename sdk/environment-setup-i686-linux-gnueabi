@@ -1,0 +1,29 @@
+export SDKTARGETSYSROOT="${BMC_TOPDIR}/sdk/sysroots"
+
+export OECORE_NATIVE_SYSROOT=
+export OECORE_TARGET_SYSROOT="$SDKTARGETSYSROOT"
+
+unset command_not_found_handle
+#export CC="gcc  -march=x86-64 -mtune=generic --sysroot=$SDKTARGETSYSROOT"
+#export CXX="g++  -march=x86-64 -mtune=generic --sysroot=$SDKTARGETSYSROOT"
+#export CPP="gcc -E  -march=x86-64 -mtune=generic --sysroot=$SDKTARGETSYSROOT"
+export AS="as "
+export LD="ld "
+export GDB=gdb
+export STRIP=strip
+export RANLIB=ranlib
+export OBJCOPY=objcopy
+export OBJDUMP=objdump
+export AR=ar
+export NM=nm
+export M4=m4
+export TARGET_PREFIX=
+#export CONFIGURE_FLAGS="--target=x86_64-linux --host=x86_64-linux --build=x86_64-linux --with-libtool-sysroot=$SDKTARGETSYSROOT"
+export CFLAGS=" -O2 -pipe -g -feliminate-unused-debug-types"
+export CXXFLAGS=" -O2 -pipe -g -feliminate-unused-debug-types"
+export LDFLAGS="-Wl,-O1 -Wl,--hash-style=gnu "
+export CPPFLAGS=""
+
+export ARCH=x86
+export CROSS_COMPILE=
+

@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#--------------------------------------------------------------------
+# This script will create 'libsmart' files, which can later be scanned
+# to see which functions live in which libraries.
+# This is called from the make system when making any library with libtool,
+# and also when using the 'sym' target.
+#--------------------------------------------------------------------
+MODE=$1
+shift
+
+#--------------------------------------------------------------------
+do_mode_create()
+{
+    PKGSRCDIR=$1
+    LIBLSTDIR=$2
+    shift 2
+    LALIBS=$*
+
+    test ! -d $LIBLSTDIR && mkdir $LIBLSTDIR
+    
+    for LALIB in $LALIBS; do
+        LIB=`basename $LALIB .la`
+        LSMART=$LIBLSTDIR/$LIB.libsmart
+        FLIB=$PKGSRCDIR/lib/${LIB}.a
+        test -e $FLIB || continue
+        nm -Cs --defined-only $FLIB | grep "T" > $LSMART
+    done
+    
+    exit 0
+}
+
+
+#--------------------------------------------------------------------
+do_mode_findsym()
+{
+    LIBLSTDIR=$1
+    shift 
+    
+    test -z "$SYM" && echo "!-> Please define a symbol to locate using: 'make findsym SYM=\"symbol_name\"'" && exit 1
+    
+    LSMARTS=`ls $LIBLSTDIR/*.libsmart`
+    for LSMART in $LSMARTS; do
+        FOUND=`grep -F "$SYM" $LSMART | wc -l`
+        test $FOUND -gt 0 && break
+    done
+    test $FOUND -eq 0 && echo " -> Symbol $SYM not found" && exit 0
+    LIB=`basename $LSMART .libsmart`
+    echo " -> Symbol $SYM found in ${LIB}.a" && exit 0
+}
+
+#--------------------------------------------------------------------
+# main()
+#--------------------------------------------------------------------
+test "$MODE" = "CREATE"  && do_mode_create  $*
+test "$MODE" = "FINDSYM" && do_mode_findsym $*
+

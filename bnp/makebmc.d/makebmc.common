@@ -1,0 +1,169 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+die()
+{
+    echo "$1"
+    exit 1
+}
+
+#--------------------------------------------------------------------------------
+echo_red()
+{
+    echo -e "${IWhite}${On_Red}$@${Color_Off}"
+}
+
+#--------------------------------------------------------------------------------
+echo_yellow()
+{
+    echo -e " ${Blue}${On_Yellow}$@${Color_Off}"
+}
+
+#--------------------------------------------------------------------------------
+echo_blue()
+{
+    echo -e " ${IYellow}${On_Blue}$@${Color_Off}"
+}
+
+#--------------------------------------------------------------------------------
+echo_green()
+{
+    echo -e " ${Black}${On_Green}$@${Color_Off}"
+}
+
+#--------------------------------------------------------------------------------
+die_red()
+{
+    echo_red "$@"
+    exit 1
+}
+
+#--------------------------------------------------------------------------------
+register_help()
+{
+    help_hook=$1
+    export BMC_HELP_LIST="$BMC_HELP_LIST help_$help_hook"
+}
+
+#--------------------------------------------------------------------------------
+register_default()
+{
+    default_hook=$1
+    export BMC_DEFAULT_LIST="$BMC_DEFAULT_LIST default_$default_hook"
+}
+
+#--------------------------------------------------------------------------------
+process_defaults()
+{
+    for hook in $BMC_DEFAULT_LIST; do
+        $hook
+    done
+}
+
+#--------------------------------------------------------------------------------
+add_darg()
+{
+    export DARGS="$DARGS $1"
+}
+
+#--------------------------------------------------------------------------------
+print_help()
+{
+    printf "\t%-13s %s\n" "$1" "$2"
+}
+
+#--------------------------------------------------------------------------------
+option_help()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    printf "\n"
+    printf "\tUsage: ./makebmc (options)\n\n"
+    print_help "option" "description"
+    for hook in `echo $BMC_HELP_LIST | sort`; do
+        print_help "-------------------------------------------------------------"
+        $hook
+    done
+    printf "\n"
+    exit 0
+}
+
+#--------------------------------------------------------------------------------
+option_h()
+{
+    option_help
+}
+
+#--------------------------------------------------------------------------------
+#register_help help
+help_help()
+{
+    print_help "help" "display this help information"
+    print_help "*h"   "alias for help"
+    print_help "*?"   "alias for help"
+}
+
+#--------------------------------------------------------------------------------
+run_make()
+{
+    MAKE_TGT=$1
+
+    #echo "run_make $1"
+    bossmsg "Making $COMP: $MAKE_TGT"
+
+    local xtime=$(timer)
+    preload_sdk
+
+    # run prep if necessary
+    if [ -z "$BNP_HOOK_DIR" ]; then
+        test -e $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH/Makefile || prep_component
+    else
+        test -e $BNP_HOOK_DIR/bld-$BMC_BUILDARCH/Makefile || prep_component
+    fi
+
+    if [ -z "$BNP_HOOK_DIR" ]; then
+        test -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH || die "!-> Invalid bld folder [$BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH], did you forget to run 'makebmc prep' first?"
+        cd $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH
+    else
+        test -d $BNP_HOOK_DIR/bld-$BMC_BUILDARCH || die "!-> Invalid bld folder [$BNP_HOOK_DIR/bld-$BMC_BUILDARCH], did you forget to run 'makebmc prep' first?"
+        cd $BNP_HOOK_DIR/bld-$BMC_BUILDARCH
+    fi
+    export MAKEFLAGS="$BMC_MAKEFLAGS"
+    make "$MAKE_TGT"
+    if [ $? -eq 0 ]; then
+	echo " --> Making $COMP $MAKE_TGT finished in $(timer $xtime)"
+    else 
+        if [ "$MAKE_TGT" = "incs" ]; then
+            die "!-> Failed while making component($COMP) with target($MAKE_TGT); did you forget to run 'makebmc prep' first?"
+        else
+            die "!-> Failed while making component($COMP) with target($MAKE_TGT)"
+        fi
+    fi
+}
+
+#--------------------------------------------------------------------------------
+bossmsg()
+{
+   if [ "$BOSS" == "true" ]; then
+       bossAddStringToWebpage.pl "$1" > /dev/null 2>&1
+   fi
+}
+
+#--------------------------------------------------------------------------------
+timer()
+{
+    if [ $# -eq 0 ]; then
+        echo `date '+%s'`
+    else
+        local  stime=$1
+        etime=`date '+%s'`
+        if [ -z "$stime" ]; then stime=$etime; fi
+        dt=$((etime - stime))
+        ds=$((dt % 60))
+        dm=$(((dt / 60) % 60))
+        dh=$((dt / 3600))
+        printf '%d:%02d:%02d' $dh $dm $ds
+    fi
+}

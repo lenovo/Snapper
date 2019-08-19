@@ -1,0 +1,107 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+_add_comp()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    COMP=`echo "$1" | cut -b8-`
+    eval test \"${comp[$2]}\" == "yes" && return
+    export BMC_COMP_LIST="$BMC_COMP_LIST $COMP"
+    eval comp[$2]="yes"
+}
+
+#--------------------------------------------------------------------------------
+help_trunk_components()
+{
+    print_help "www"         "select www component"
+    print_help "allc"        "select all components"
+    print_help "listc"       "list all components"
+}
+
+#--------------------------------------------------------------------------------
+default_trunk_components()
+{
+    test -n "$BMC_COMP_LIST" && return
+    add_darg allc
+}
+
+#--------------------------------------------------------------------------------
+process_trunk()
+{
+    register_help    trunk_components
+    register_default trunk_components
+
+    option_www()
+    {
+        _add_comp $FUNCNAME 14
+    }
+    
+    option_listc()
+    {
+        echo " -> These are all the available components"
+        echo -e "\twww"
+        exit
+    }
+
+    option_allc()
+    {
+        option_www
+    }
+}
+
+
+
+
+process_snapper()
+{
+    process_trunk
+}
+
+#--------------------------------------------------------------------------------
+process_unknown()
+{
+    # allow any folder to use the build system with a hook
+    if [ -n "$BNP_HOOK_FILE" -a -n "$BNP_HOOK_FUNC" ]; then
+        export BNP_HOOK_DIR=`dirname $BNP_HOOK_FILE`
+        source $BNP_HOOK_FILE
+        $BNP_HOOK_FUNC
+        RC=$?
+        test $RC -eq 0 && return
+        echo "!-> $BNP_HOOK failed: rc=$RC"
+        exit $RC
+    fi
+    
+    echo "Unexpected current folder: $CURDIR"
+    echo " - Add .process file containing original basedir (trunk or pib-src)"
+    exit 1
+}
+
+#--------------------------------------------------------------------------------
+# name of dir matters
+get_process()
+{
+    case "$1" in
+        "trunk")         PROCESS=process_trunk;;
+        "bmc-trunk")    PROCESS=process_trunk;;
+        *)               PROCESS=process_snapper;;
+    esac
+}
+
+
+#--------------------------------------------------------------------------------
+# use name of dir to deternine process
+CURDIR=$(basename $PWD)
+get_process $CURDIR
+
+if [ "$PROCESS" == "process_unknown" ]; then
+    if [ -e $PWD/.process ]; then 
+        get_process "$(cat $PWD/.process)"
+    fi
+fi
+
+eval $PROCESS
+
+

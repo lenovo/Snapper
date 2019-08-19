@@ -1,0 +1,27 @@
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+option_qq()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    export BMC_MAKEFLAGS="$BMC_MAKEFLAGS --quiet"
+}
+
+#--------------------------------------------------------------------------------
+option_vv()
+{
+    test -z "$BMC_STAGE_SETUP" && return
+    export BMC_MAKEFLAGS="$BMC_MAKEFLAGS V=1"
+}
+
+#--------------------------------------------------------------------------------
+register_help verbosity
+help_verbosity()
+{
+    print_help "qq" "build in ultra quiet mode"
+    print_help "vv" "build in ultra verbose mode"
+}
+    

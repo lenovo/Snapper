@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# This script will install any files located under a 'rootfs' folder to the packaging area
+
+#--------------------------------------------------------------------
+die()
+{
+    echo "$1"
+    exit 1
+}
+
+#--------------------------------------------------------------------
+test -n "$1" && COMPNAME="$1" || die "!-> Invalid COMPNAME"
+test -n "$2" && SRCDIR="$2" || die "!-> Invalid SRCDIR"
+test -n "$3" && TGTDIR="$3" || die "!-> Invalid TGTDIR"
+
+SRCDIR=${SRCDIR}/rootfs
+
+test ! -d "$SRCDIR" && exit 0
+test -d "$TGTDIR" || die "!-> Invalid TGTDIR"
+
+echo "-> Installing rootfs files for ${COMPNAME}"
+cp -a${CP_HUSH} ${SRCDIR}/* ${TGTDIR}
+
+
+

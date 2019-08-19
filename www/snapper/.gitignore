@@ -1,0 +1,6 @@
+bld-arm
+bld-sh4
+bld-x86
+*.o
+*.a
+Makefile.in

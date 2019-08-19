@@ -1,0 +1,100 @@
+#!/bin/bash
+#---------------------------------------------------------------------------
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+#---------------------------------------------------------------------------
+
+# These are the commands to run from a folder that contains only configure.ac and Makefile.am
+# These commands will generate all the surrounding support files, which allow you to then
+# run ./configure and make
+
+
+#--------------------------------------------------------------------
+die()
+{
+    echo "$1"
+    exit 1
+}
+
+#--------------------------------------------------------------------
+fix_libtool_x86()
+{
+    local LIBTOOL="libtool"
+    cp -a ${LIBTOOL} ${LIBTOOL}.orig
+    sed -i -e 's/\(^finish_cmds=".*"\)/\1\n\n# Added by IMM\nfinish_cmds=""/' ${LIBTOOL}
+    sed -i -e 's/^sys_lib_dlsearch_path_spec=.*/sys_lib_dlsearch_path_spec="\/lib \/usr\/lib \$\{BMC_TGTDIR\}\/lib"/' ${LIBTOOL}
+    #sed -i -e 's/^    func_resolve_sysroot_result=$lt_sysroot$func_stripname_result/    func_resolve_sysroot_result=$func_stripname_result\n    test ! -e $func_resolve_sysroot_result \&\& func_resolve_sysroot_result=$lt_sysroot$func_stripname_result/' ${LIBTOOL}
+}
+#--------------------------------------------------------------------
+check_tool()
+{
+    TOOL=$1
+    TOOLDIR=`dirname \`which $TOOL\``
+    test "$TOOLDIR" = "" && die "!-> ELIE SDK tool [$TOOL] not found"
+    if [ "$BMC_SDK" != "none" ]; then
+        test "$TOOLDIR" = "/usr/bin" && die "!-> ELIE SDK tool [$TOOL] not found"
+    fi
+}
+
+#--------------------------------------------------------------------
+check_tools()
+{
+    check_tool libtoolize
+    check_tool aclocal
+    check_tool autoheader
+    check_tool autoconf
+    check_tool automake
+}
+
+#--------------------------------------------------------------------
+copy_sdk_files()
+{
+    M4CONFIGDIR=${SCRIPTDIR}/m4/config
+
+    #if [ "$BMC_SDK" = "none" ]; then
+    if [ true ]; then
+        cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/config/ltmain.sh ${M4CONFIGDIR}
+	    test $? -ne 0 && cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/build-aux/ltmain.sh ${M4CONFIGDIR}	
+    else
+        cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/build-aux/ltmain.sh ${M4CONFIGDIR}
+    fi
+}
+
+
+#--------------------------------------------------------------------
+test -e configure.ac || die "!-> You need to have a proper configure.ac in this folder"
+test -e Makefile.am  || die "!-> You need to have a proper Makefile.am in this folder"
+
+#--------------------------------------------------------------------
+SCRIPTDIR=`realpath \`dirname $0\``
+
+#. ${ELIE_ENV}
+
+# cease perl complaince.. 
+export LC_ALL=C LANG=C 
+
+copy_sdk_files
+
+#check_tools
+
+ARCH=x86
+
+libtoolize --quiet
+aclocal
+autoheader
+autoconf -i -f
+automake --add-missing -f
+chmod 777 configure
+
+#--------------------------------------------------------------------
+
+if [ "$ARCH" = "x86" ]; then
+    sudo rm -rf bld-x86
+    mkdir bld-x86
+    cd bld-x86
+    #../configure --build=x86_64 --host=x86_64 --quiet
+    ../configure --build=i686-linux-gnu --host=i686-linux-gnu --quiet
+
+    fix_libtool_x86
+fi
+

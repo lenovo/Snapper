@@ -1,0 +1,81 @@
+#!/bin/bash 
+#---------------------------------------------------------------------------
+# 
+# Copyright (c) 2018-present, Lenovo. All rights reserved. 
+# Licensed under BSD, see COPYING.BSD file for details.
+# 
+#---------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+init()
+{
+    GARGS="$@"
+    test -z "$GARGS" && export GARGS="help"
+    BMC_BNPDIR=`dirname \`realpath -s $0\``
+    BMC_TOPDIR=`dirname $BMC_BNPDIR`
+}
+
+#--------------------------------------------------------------------------------
+load_plugins()
+{
+    source $BMC_BNPDIR/makebmc.d/makebmc.common
+
+    PLUGINS=`ls $BMC_BNPDIR/makebmc.d`
+    for PLUGIN in $PLUGINS; do
+        test "$PLUGIN" = "makebmc.common" && continue
+        source $BMC_BNPDIR/makebmc.d/$PLUGIN
+    done
+}
+
+#--------------------------------------------------------------------------------
+test_id()
+{
+    MYID=`id -u`
+    test "$MYID" != "0" && return
+    echo -e "${IYellow}${On_Black}Note: You should NOT be running this script as root. The make system will call 'sudo' when it needs to become root.${Color_Off}"   
+    echo -e "${IYellow}${On_Black}      Please run 'sudo makebmc pristine' to cleanup, then 'makebmc pristine; makebmc prep; makebmc world_x86${Color_Off}"   
+}
+
+#--------------------------------------------------------------------------------
+process_args_setup()
+{
+    unset BMC_STAGE_EXEC
+    export BMC_STAGE_SETUP="yes"
+    
+    for ARG in $*; do
+        test -z "$ARG" && continue
+        ARG=`echo $ARG | tr - _`
+        ARG=`echo $ARG | tr \? h`
+        eval "option_$ARG"
+    done
+    process_defaults
+    for ARG in $DARGS; do
+        test -z "$ARG" && continue
+        echo " -> Adding default option(s): $ARG"
+        ARG=`echo $ARG | tr - _`
+        ARG=`echo $ARG | tr \? h`
+        eval "option_$ARG"
+    done
+}
+
+#--------------------------------------------------------------------------------
+process_args_exec()
+{
+    unset BMC_STAGE_SETUP
+    export BMC_STAGE_EXEC="yes"
+    ARGS=`echo $* | tr - _`
+    for ARG in $ARGS; do
+        eval "option_$ARG"
+    done
+}
+
+#--------------------------------------------------------------------------------
+export BMC_MAKEIMM=true
+set -e
+init $*
+load_plugins
+test_id
+process_args_setup $GARGS
+set +e
+process_args_exec  $GARGS $DARGS
+
