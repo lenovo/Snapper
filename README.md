@@ -54,12 +54,19 @@ pip install flask
 pip install requests
 ...
 
-build Snapper code:
+
+
+Build Snapper Code:
+--------------------------------
+put 2018.3 json schema files under www/snapper/pyapp/schema_json/
+put 2018.3 CSDL schema files under www/snapper/pyapp/schema_xml/
+if you want to use mockup data, put them under www/snapper/pyapp/mockup/
+
 ./bnp/makebmc pristine
 ./bnp/makebmc prep
 ./bnp/makebmc www allt
 
-NOTE: the simulator wraps some Python modules under www/snapper/pyapp/openmodules/ like flask, requests. If you Python
+NOTE: the simulator could wraps Python modules under www/snapper/pyapp/openmodules/ like flask, requests. If you Python
 environment already contains these modules, the simulator search Python path in your system first. 
 
 
