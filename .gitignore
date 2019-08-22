@@ -15,4 +15,10 @@ go-trunk
 ltmain.sh
 m4
 !bnp/buildtools/m4
-bnp/buildtools/m4/config
+bnp/buildtools/m4/config/config.guess
+bnp/buildtools/m4/config/config.sub
+bnp/buildtools/m4/config/depcomp
+bnp/buildtools/m4/config/install-sh
+bnp/buildtools/m4/config/ltmain.sh
+bnp/buildtools/m4/config/missing
+
