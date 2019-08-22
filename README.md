@@ -93,7 +93,7 @@ Running Snapper
 cd pkgsrc-i686/rootfs/
 sudo ./bin/appservice.sh start
 
-the Snapper Redfish service is running with your implementation or mockup data over HTTPS (port 8000)
-debugging log is /tmp/gunicorn_snapper.log
+the Snapper Redfish service is running with your implementation or mockup data over HTTPS (port 8000).
+default username 'USERID', password 'PASSW0RD'. debugging log is /tmp/gunicorn_snapper.log
 
 

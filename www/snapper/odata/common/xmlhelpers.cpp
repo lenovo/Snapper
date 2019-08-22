@@ -159,7 +159,7 @@ namespace odata { namespace edm {
                 break;
 
             case XmlNodeType_Text:
-                std::cout << "element node '" << m_elementStack.back()->name << "' has text : " << get_current_element_text () << std::endl;
+                //std::cout << "element node '" << m_elementStack.back()->name << "' has text : " << get_current_element_text () << std::endl;
                 handle_element(m_elementStack.back()->name);
                 break;
 
