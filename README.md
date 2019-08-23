@@ -27,6 +27,7 @@ in your system:
 - itsdangerous(0.15)
 - portalocker(0.3)
 - six(1.11.0)
+
 additionally it has dependency on and uses following source code
 - odatacpp-server
 - bson
@@ -37,34 +38,37 @@ additionally it has dependency on and uses following source code
 Installation
 --------------------------------
 download nginx source code and install:
-./configure --sbin-path=/usr/sbin/nginx --with-http_ssl_module
-make
-make install
+- ./configure --sbin-path=/usr/sbin/nginx --with-http_ssl_module
+- make
+- make install
 
 install gunicorn:
-pip install gunicorn
+- pip install gunicorn
 
 install gevent:
-pip install gevent
+- pip install gevent
 
 install libraries:
-yum install python-devel boost-devel pam-devel jansson-devel e2fsprogs-devel  libcurl-devel libuuid-devel libuuid
+- yum install python-devel boost-devel pam-devel jansson-devel e2fsprogs-devel  libcurl-devel libuuid-devel libuuid libxml2 sqlite-devel
+
 install other Python modules like
-pip install flask
-pip install requests
-...
+- pip install flask
+- pip install requests
+- ...
 
 
 
 Build Snapper Code:
 --------------------------------
-put 2018.3 json schema files under www/snapper/pyapp/schema_json/
-put 2018.3 CSDL schema files under www/snapper/pyapp/schema_xml/
-if you want to use mockup data, put them under www/snapper/pyapp/mockup/
+prepare schema files and mockup data:
+- put 2018.3 json schema files under www/snapper/pyapp/schema_json/
+- put 2018.3 CSDL schema files under www/snapper/pyapp/schema_xml/
+- if you want to use mockup data, put them under www/snapper/pyapp/mockup/
 
-./bnp/makebmc pristine
-./bnp/makebmc prep
-./bnp/makebmc www allt
+build code:
+- ./bnp/makebmc pristine
+- ./bnp/makebmc prep
+- ./bnp/makebmc www allt
 
 NOTE: the simulator could wraps Python modules under www/snapper/pyapp/openmodules/ like flask, requests. If you Python
 environment already contains these modules, the simulator search Python path in your system first. 
@@ -74,8 +78,8 @@ environment already contains these modules, the simulator search Python path in 
 Configuration and Custom Implementation
 --------------------------------
 configure nginx:
-www/rootfs/etc/nginx/nginx.conf - general setting for http server with http service on port 8080
-www/rootfs/etc/nginx/snapper_server.conf - snapper https service on port 8000
+1)www/rootfs/etc/nginx/nginx.conf - general setting for http server with http service on port 8080
+2)www/rootfs/etc/nginx/snapper_server.conf - snapper https service on port 8000
 
 configure gunicorn:
 www/rootfs/etc/snapper.conf.py - WSGI server settings. it can also be launched as lightweight http server
@@ -90,8 +94,8 @@ www/snapper/pyapp/mockup/
 
 Running Snapper
 --------------------------------
-cd pkgsrc-i686/rootfs/
-sudo ./bin/appservice.sh start
+- cd pkgsrc-i686/rootfs/
+- sudo ./bin/appservice.sh start
 
 the Snapper Redfish service is running with your implementation or mockup data over HTTPS (port 8000).
 default username 'USERID', password 'PASSW0RD'. debugging log is /tmp/gunicorn_snapper.log
