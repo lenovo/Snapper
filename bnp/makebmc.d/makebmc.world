@@ -22,7 +22,8 @@ option_world_x86()
 register_help world
 help_world()
 {
-    print_help "world"       "builds allc and allt for selected arch"
-    print_help "world_x86"   "builds world for x86"
+    print_help "world"   "builds world for x86"
+    #print_help "world"       "builds allc and allt for selected arch"
+    #print_help "world_x86"   "builds world for x86"
 }
 

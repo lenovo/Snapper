@@ -31,12 +31,14 @@ default_trunk_components()
 #--------------------------------------------------------------------------------
 process_trunk()
 {
-    register_help    trunk_components
+    #no help showing
+    #register_help    trunk_components
+
     register_default trunk_components
 
     option_www()
     {
-        _add_comp $FUNCNAME 14
+        _add_comp ${FUNCNAME} 14
     }
     
     option_listc()
@@ -52,31 +54,9 @@ process_trunk()
     }
 }
 
-
-
-
 process_snapper()
 {
     process_trunk
-}
-
-#--------------------------------------------------------------------------------
-process_unknown()
-{
-    # allow any folder to use the build system with a hook
-    if [ -n "$BNP_HOOK_FILE" -a -n "$BNP_HOOK_FUNC" ]; then
-        export BNP_HOOK_DIR=`dirname $BNP_HOOK_FILE`
-        source $BNP_HOOK_FILE
-        $BNP_HOOK_FUNC
-        RC=$?
-        test $RC -eq 0 && return
-        echo "!-> $BNP_HOOK failed: rc=$RC"
-        exit $RC
-    fi
-    
-    echo "Unexpected current folder: $CURDIR"
-    echo " - Add .process file containing original basedir (trunk or pib-src)"
-    exit 1
 }
 
 #--------------------------------------------------------------------------------
@@ -85,7 +65,7 @@ get_process()
 {
     case "$1" in
         "trunk")         PROCESS=process_trunk;;
-        "bmc-trunk")    PROCESS=process_trunk;;
+        "Snapper")       PROCESS=process_snapper;;
         *)               PROCESS=process_snapper;;
     esac
 }
@@ -95,12 +75,6 @@ get_process()
 # use name of dir to deternine process
 CURDIR=$(basename $PWD)
 get_process $CURDIR
-
-if [ "$PROCESS" == "process_unknown" ]; then
-    if [ -e $PWD/.process ]; then 
-        get_process "$(cat $PWD/.process)"
-    fi
-fi
 
 eval $PROCESS
 

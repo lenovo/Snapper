@@ -40,24 +40,6 @@ option_libs()
 }
 
 #--------------------------------------------------------------------------------
-option_custom()
-{
-    BMC_TARGETS=true
-    
-    test -z "$BMC_STAGE_EXEC" && return
-    test -z "$BMC_COMP_LIST"  && die "!-> No components selected"
-    test -z "$BMC_BUILDARCH"  && die "!-> No arch selected"
-    
-    local xtime=$(timer)
-    for COMP in $BMC_COMP_LIST; do
-        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-        echo " -> Building custom targets for $COMP ($BMC_BUILDARCH)"
-        run_make custom
-    done
-    echo " -> Building custom targets finished in $(timer $xtime)"
-}
-
-#--------------------------------------------------------------------------------
 option_data()
 {
     BMC_TARGETS=true
@@ -94,24 +76,6 @@ option_bins()
 }
 
 #--------------------------------------------------------------------------------
-option_prebuilt()
-{
-    BMC_TARGETS=true
-
-    test -z "$BMC_STAGE_EXEC" && return
-    test -z "$BMC_COMP_LIST"  && die "!-> No components selected"
-    test -z "$BMC_BUILDARCH"  && die "!-> No arch selected"
-    
-    local xtime=$(timer)
-    for COMP in $BMC_COMP_LIST; do
-        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-        echo " -> Building prebuilt targets for $COMP ($BMC_BUILDARCH)"
-        run_make install_prebuilt
-    done
-    echo " -> Building prebuilt targets finished in $(timer $xtime)"
-}
-
-#--------------------------------------------------------------------------------
 register_default targets
 default_targets()
 {
@@ -125,7 +89,6 @@ option_allt()
     local xtime=$(timer)
     option_incs
     option_libs
-    option_custom
     option_data
     option_bins
     if [ "$BMC_STAGE_EXEC" = "yes" ]; then 
@@ -138,24 +101,21 @@ option_listt()
 {
     echo " -> These are all the available targets"
     echo -e "\tincs"
-    #echo -e "\tcustom"
     echo -e "\tlibs"
-    #echo -e "\tdata"
-    #echo -e "\tbins"
-    #echo -e "\tprebuilt - pib-src only"
+    echo -e "\tdata"
+    echo -e "\tbins"
     exit
 }
 
 #--------------------------------------------------------------------------------
-register_help targets
+#no help showing
+#register_help targets
 help_targets()
 {
     print_help "incs"       "exports all include files for selected components"
     print_help "libs"       "build lib targets for selected components"
-    #print_help "custom"     "build custom targets for selected components"
-    #print_help "data"       "build data targets for selected components"
-    #print_help "bins"       "build bin targets for selected components"
-    #print_help "prebuilt"   "build prebuilt images/binaries for selected components [pib-src only]"
+    print_help "data"       "build data targets for selected components"
+    print_help "bins"       "build bin targets for selected components"
     print_help "allt"       "build all targets for selected components"
     print_help "listt"      "list all targets"
 }

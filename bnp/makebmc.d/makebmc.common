@@ -111,29 +111,19 @@ run_make()
     MAKE_TGT=$1
 
     #echo "run_make $1"
-    bossmsg "Making $COMP: $MAKE_TGT"
 
     local xtime=$(timer)
     preload_sdk
 
     # run prep if necessary
-    if [ -z "$BNP_HOOK_DIR" ]; then
-        test -e $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH/Makefile || prep_component
-    else
-        test -e $BNP_HOOK_DIR/bld-$BMC_BUILDARCH/Makefile || prep_component
-    fi
+    test -e $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH/Makefile || prep_component
 
-    if [ -z "$BNP_HOOK_DIR" ]; then
-        test -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH || die "!-> Invalid bld folder [$BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH], did you forget to run 'makebmc prep' first?"
-        cd $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH
-    else
-        test -d $BNP_HOOK_DIR/bld-$BMC_BUILDARCH || die "!-> Invalid bld folder [$BNP_HOOK_DIR/bld-$BMC_BUILDARCH], did you forget to run 'makebmc prep' first?"
-        cd $BNP_HOOK_DIR/bld-$BMC_BUILDARCH
-    fi
+    test -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH || die "!-> Invalid bld folder [$BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH], did you forget to run 'makebmc prep' first?"
+    cd $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH
     export MAKEFLAGS="$BMC_MAKEFLAGS"
     make "$MAKE_TGT"
     if [ $? -eq 0 ]; then
-	echo " --> Making $COMP $MAKE_TGT finished in $(timer $xtime)"
+        echo " --> Making $COMP $MAKE_TGT finished in $(timer $xtime)"
     else 
         if [ "$MAKE_TGT" = "incs" ]; then
             die "!-> Failed while making component($COMP) with target($MAKE_TGT); did you forget to run 'makebmc prep' first?"
@@ -141,14 +131,6 @@ run_make()
             die "!-> Failed while making component($COMP) with target($MAKE_TGT)"
         fi
     fi
-}
-
-#--------------------------------------------------------------------------------
-bossmsg()
-{
-   if [ "$BOSS" == "true" ]; then
-       bossAddStringToWebpage.pl "$1" > /dev/null 2>&1
-   fi
 }
 
 #--------------------------------------------------------------------------------

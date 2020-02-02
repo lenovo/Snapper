@@ -7,69 +7,39 @@
 option_pristine()
 {
     test -n "$BMC_STAGE_SETUP" || return
-    
-    if [ -z "$BNP_HOOK_DIR" ]; then
-        option_allc
-        option_allt
-        option_noarch
-    
-        for COMP in $BMC_COMP_LIST; do
-            test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-            echo " -> Removing config cache folders under $COMP"
-            ( cd $BMC_TOPDIR/$COMP && rm -rf autom4te.cache m4 aclocal.m4 config config.h.in configure )
-            echo " -> Removing Makefile.in files under $COMP"
-            ( cd $BMC_TOPDIR/$COMP && find -name "Makefile.in" -exec rm -f {} \; )
-        done
-    
-        for COMP in $BMC_COMP_LIST; do
-            test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-            echo " -> Removing build folders under $COMP"
-            ( cd $BMC_TOPDIR/$COMP && sudo rm -rf bld-arm )
-            ( cd $BMC_TOPDIR/$COMP && sudo rm -rf bld-x86 )
-            ( cd $BMC_TOPDIR/$COMP && sudo rm -rf bld-sh4 )
-        done
-    
-        echo " -> Removing global export folder"
-        ( cd $BMC_TOPDIR && rm -rf export )
 
-        if [ -d $BMC_TOPDIR/www ]; then
-            echo " -> Removing additional build folders under www"
-            ( cd $BMC_TOPDIR/www && sudo rm -rf snapper/pyapp/build )
-            ( cd $BMC_TOPDIR/www && sudo find . -name *.pyc | xargs rm -f )
-        fi
+    option_allc
+    option_allt
+    option_noarch
 
-        echo " -> Removing global pkgsrc folders"
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgsrc-arm )
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgsrc-*86* )
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgsrc-sh4 )
-        
-        echo " -> Removing global pkgout folders"
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgout-arm )
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgout-x86* )
-        ( cd $BMC_TOPDIR && sudo rm -rf pkgout-sh4 )
-        
-        echo " -> Removing autotool links"
-        ( cd $BMC_TOPDIR && sudo rm -rf bnp/buildtools/m4/config/* )
+    for COMP in $BMC_COMP_LIST; do
+        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
+        echo " -> Removing config cache folders under $COMP"
+        ( cd $BMC_TOPDIR/$COMP && rm -rf autom4te.cache m4 aclocal.m4 config config.h.in configure )
+        echo " -> Removing Makefile.in files under $COMP"
+        ( cd $BMC_TOPDIR/$COMP && find -name "Makefile.in" -exec rm -f {} \; )
+    done
 
-        echo " -> Removing SDK links"
-        set +e
-        ( cd $BMC_TOPDIR && for LINK in `sudo find . -path ./ework -prune -o -type l`; do IS_SDK=`ls -l $LINK | grep "/opt/" | wc -l`; test "$IS_SDK" -gt 0 && sudo rm -f $LINK; done )
-        set -e
-        
-    else
-        BMC_TARGETS=true
-        
-        echo " -> Removing config cache files/folders/links"
-        ( cd $BNP_HOOK_DIR && sudo rm -rf autom4te.cache m4 aclocal.m4 config config.h.in configure compile config.guess config.sub depcomp install-sh ltmain.sh missing)
-        echo " -> Removing Makefile.in files"
-        ( cd $BNP_HOOK_DIR && find -name "Makefile.in" -exec rm -f {} \; )
-        echo " -> Removing build folders"
-        ( cd $BNP_HOOK_DIR && sudo rm -rf bld-arm )
-        ( cd $BNP_HOOK_DIR && sudo rm -rf bld-x86 )
-        ( cd $BNP_HOOK_DIR && sudo rm -rf bld-sh4 )
+    for COMP in $BMC_COMP_LIST; do
+        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
+        echo " -> Removing build folders bld-x86 under $COMP"
+        ( cd $BMC_TOPDIR/$COMP && sudo rm -rf bld-x86 )
+    done
+
+    echo " -> Removing global export folder"
+    ( cd $BMC_TOPDIR && rm -rf export )
+
+    if [ -d $BMC_TOPDIR/www ]; then
+        echo " -> Removing additional build folders under www"
+        ( cd $BMC_TOPDIR/www && sudo rm -rf snapper/pyapp/build )
+        ( cd $BMC_TOPDIR/www && sudo find . -name *.pyc | xargs rm -f )
     fi
 
+    echo " -> Removing global pkgsrc folders"
+    ( cd $BMC_TOPDIR && sudo rm -rf pkgsrc-*86* )
     
+    echo " -> Removing autotool links"
+    ( cd $BMC_TOPDIR && sudo rm -rf bnp/buildtools/m4/config/* )
 
     echo " -> Source tree is pristine"
 }

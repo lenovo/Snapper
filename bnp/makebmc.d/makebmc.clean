@@ -10,18 +10,12 @@ option_clean()
     test -z "$BMC_COMP_LIST"  && die "!-> No components selected"
     test -z "$BMC_BUILDARCH"  && die "!-> No arch selected"
     
-    if [ -z "$BNP_HOOK_DIR" ]; then
-        for COMP in $BMC_COMP_LIST; do
-            test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-            test ! -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH && die "!-> Cannot clean. Run 'prep' first"
-            echo " -> Running clean for $COMP ($BMC_BUILDARCH)"
-            run_make clean
-        done
-    else
-        test ! -d $BNP_HOOK_DIR/bld-$BMC_BUILDARCH && die "!-> Cannot clean. Run 'prep' first"
-        echo " -> Running clean ($BMC_BUILDARCH)"
+    for COMP in $BMC_COMP_LIST; do
+        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
+        test ! -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH && die "!-> Cannot clean. Run 'prep' first"
+        echo " -> Running clean for $COMP ($BMC_BUILDARCH)"
         run_make clean
-    fi  
+    done
 }
 
 #--------------------------------------------------------------------------------
@@ -31,18 +25,12 @@ option_distclean()
     test -z "$BMC_COMP_LIST"  && die "!-> No components selected"
     test -z "$BMC_BUILDARCH"  && die "!-> No arch selected"
     
-    if [ -z "$BNP_HOOK_DIR" ]; then
-        for COMP in $BMC_COMP_LIST; do
-            test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
-            test ! -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH && die "!-> Cannot distclean. Run 'prep' first"
-            echo " -> Running distclean for $COMP ($BMC_BUILDARCH)"
-            run_make distclean
-        done
-    else
-        test ! -d $BNP_HOOK_DIR/bld-$BMC_BUILDARCH && die "!-> Cannot distclean. Run 'prep' first"
-        echo " -> Running distclean ($BMC_BUILDARCH)"
+    for COMP in $BMC_COMP_LIST; do
+        test ! -d $BMC_TOPDIR/$COMP && COMP=`echo $COMP | tr _ -`
+        test ! -d $BMC_TOPDIR/$COMP/bld-$BMC_BUILDARCH && die "!-> Cannot distclean. Run 'prep' first"
+        echo " -> Running distclean for $COMP ($BMC_BUILDARCH)"
         run_make distclean
-    fi  
+    done
 }
 
 #--------------------------------------------------------------------------------

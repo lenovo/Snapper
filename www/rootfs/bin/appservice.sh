@@ -3,6 +3,9 @@ CWD=`pwd`
 NGINX_BIN="/usr/sbin/nginx"
 NGINX_CONF="$CWD/etc/nginx/nginx.conf"
 
+JSON_SCHM="$CWD/var/www/snapper/schema_json/ServiceRoot.json"
+XML_SCHM="$CWD/var/www/snapper/schema_xml/ServiceRoot_v1.xml"
+
 GUNICORN_BIN="/usr/local/bin/gunicorn"
 GUNICORN_CONF="$CWD/etc/snapper.conf.py"
 APP_MODULE="snapperapp"
@@ -40,10 +43,33 @@ start_service(){
 }
 
 MYPYTHON=`python3 -c "import sys; print(':'.join(x for x in sys.path if x))"`
-main() {
+prepare() {
 	LD_LIBRARY_PATH="$CWD/lib:$LD_LIBRARY_PATH"
 	export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 	export PYTHONPATH="$MYPYTHON:$CWD/var/www/snapper/app:$CWD/var/www/snapper/openmodules"
+
+	if [ ! -e "$NGINX_BIN" ]; then
+		echo "can't find $NGINX_BIN"
+		exit
+	fi
+	if [ ! -e "$GUNICORN_BIN" ]; then
+		echo "can't find $GUNICORN_BIN"
+		exit
+	fi
+
+	if [ ! -e "$JSON_SCHM" ]; then
+		echo "can't find json schemas"
+		exit
+	fi
+	if [ ! -e "$XML_SCHM" ]; then
+		echo "can't find csdl schemas"
+		exit
+	fi
+
+}
+
+main() {
+	prepare
 
 	case "$1" in
 		"stop" ) 
@@ -53,22 +79,12 @@ main() {
 		    stop_service
 		    sleep 1
 		    start_service
-                    echo "abnormal $?" 
+		    echo "abnormal $?" 
 		    ;;
 		* )
 		    echo "invalid parameters"
 		    echo "appservice.sh [start|stop]"
 	esac
 }
-
-if [ ! -e "$NGINX_BIN" ]; then
-	echo "can't find $NGINX_BIN"
-	exit
-fi
-
-if [ ! -e "$GUNICORN_BIN" ]; then
-        echo "can't find $GUNICORN_BIN"
-        exit
-fi
 
 main $@

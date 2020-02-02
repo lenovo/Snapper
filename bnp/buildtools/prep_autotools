@@ -31,9 +31,10 @@ check_tool()
     TOOL=$1
     TOOLDIR=`dirname \`which $TOOL\``
     test "$TOOLDIR" = "" && die "!-> ELIE SDK tool [$TOOL] not found"
-    if [ "$BMC_SDK" != "none" ]; then
-        test "$TOOLDIR" = "/usr/bin" && die "!-> ELIE SDK tool [$TOOL] not found"
-    fi
+
+    #if [ "$BMC_SDK" != "none" ]; then
+    #    test "$TOOLDIR" = "/usr/bin" && die "!-> ELIE SDK tool [$TOOL] not found"
+    #fi
 }
 
 #--------------------------------------------------------------------
@@ -78,7 +79,7 @@ export LC_ALL=C LANG=C
 
 copy_sdk_files
 
-#check_tools
+check_tools
 
 ARCH=x86
 

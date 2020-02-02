@@ -28,11 +28,11 @@ default_arch()
 }
 
 #--------------------------------------------------------------------------------
-register_help arch
+#no help showing
+#register_help arch
 help_arch()
 {
     print_help "x86"    "select x86 arch"
-    print_help "noarch" "arch is not applicable"
 }
 
 

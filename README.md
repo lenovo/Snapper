@@ -70,7 +70,7 @@ prepare schema files and mockup data:
 build code:
 - ./bnp/makebmc pristine
 - ./bnp/makebmc prep
-- ./bnp/makebmc www allt
+- ./bnp/makebmc world
 
 NOTE: the simulator could wraps Python modules under www/snapper/pyapp/openmodules/ like flask, requests. If you Python
 environment already contains these modules, the simulator search Python path in your system first. 

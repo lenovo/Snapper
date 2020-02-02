@@ -180,6 +180,7 @@ snapper_autogen_privreg_LDFLAGS  = $(AM_LDFLAGS) $(py_bin_ldflags)
 
 #---------------------------------------------------------------------------
 install-data-local:
+	(find ${PWD} -type f -a \( -name "*.so" -o -name "*.a" -o -name "*.o" \) | xargs ${STRIP} --strip-unneeded )
 	$(AM_MK_HUSH)install -$(AM_IN_HUSH)d $(SNAPPER_DIR)
 	$(AM_MK_HUSH)cd $(srcdir) && (cp -rf di_metadata $(SNAPPER_DIR) )
 

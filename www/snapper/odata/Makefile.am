@@ -77,4 +77,10 @@ libodata_la_SOURCES = \
 
 #  bson/time_support.cpp
 #---------------------------------------------------------------------------
+install-data-local:
+	(find ${PWD} -type f -a \( -name "*.so" -o -name "*.a" -o -name "*.o" \) | xargs ${STRIP} --strip-unneeded )
+
+
+
+#---------------------------------------------------------------------------
 include $(BMC_RULES)

@@ -59,7 +59,6 @@ AM_CPPFLAGS     += -I$(EXPORT_DIR)/include -I$(EXPORT_DIR)/usr/include -I$(STUB_
 AM_CPPFLAGS     += -I$(XROOT)/usr/include
 AM_CPPFLAGS     += -I$(XROOT)/usr/include/libxml2
 AM_CPPFLAGS     += -I$(XROOT)/usr/include/python3.6m
-#AM_CPPFLAGS     += -I${SDKTARGETSYSROOT}/usr/include/libxml2
 #AM_CPPFLAGS     += $(GNUINC_DIRS)
 
 AM_CPPFLAGS     += $(IMM_CPPFLAGS)
@@ -170,36 +169,9 @@ libs install_libs: check-sdk install_libs-recursive
 	$(AM_MK_HUSH)test -z "$(lib_LTLIBRARIES)"    || $(MAKE) $(AM_MAKEFLAGS) $(AM_MAKEFLAGS_EXT) install-libLTLIBRARIES || exit 1
 	$(AM_MK_HUSH)test -z "$(noinst_LTLIBRARIES)" || $(MAKE) $(AM_MAKEFLAGS) $(AM_MAKEFLAGS_EXT) $(noinst_LTLIBRARIES)  || exit 1
 	$(AM_MK_HUSH)test -z "$(noinst_LIBRARIES)"   || $(MAKE) $(AM_MAKEFLAGS) $(AM_MAKEFLAGS_EXT) $(noinst_LIBRARIES)    || exit 1
-	$(AM_MK_HUSH)test -z "$(INSTALL_LIBS_HOOK)"  || $(MAKE) $(AM_MAKEFLAGS) $(INSTALL_LIBS_HOOK)   || exit 1
 	$(AM_MK_HUSH)test -z "$(lib_LTLIBRARIES)"    || $(LIBLIST_SCRIPT) $(COMP_NAME)  $(LIBLIST_DIR) $(lib_LTLIBRARIES)
 	$(AM_MK_HUSH)test -z "$(lib_LTLIBRARIES)"    || $(LIBSMRT_SCRIPT) CREATE $(PKGSRC_DIR) $(LIBLIST_DIR) $(lib_LTLIBRARIES)
 	$(AM_MK_HUSH)test -z '$(TBD)'                || echo -e "${BWhite}${On_Red}\r!!! TBD !!! -> $(TBD) (`pwd | awk -F/ '{print $$(NF-3)\"/\"$$(NF-1)\"/\"$$(NF)}'`) !!! TBD !!!${Color_Off}"
-
-
-#---------------------------------------------------------------------------
-custom-recursive:
-	$(AM_MK_HUSH)list='$(SUBDIRS)'; for subdir in $$list; do \
-		($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) custom); \
-		test $$? -eq 0 || exit 1; \
-	done
-
-custom: check-sdk custom-recursive
-	$(AM_MK_HUSH)test -z "$(CUSTOM_TGTS)" || echo " -> Building custom package for subcomponent [$(SUBCOMP_NAME)]"
-	$(AM_MK_HUSH)test -z "$(CUSTOM_TGTS)" || $(MAKE) $(AM_MAKEFLAGS) $(CUSTOM_TGTS) || exit 1
-	$(AM_MK_HUSH)test -z '$(TBD)'         || echo -e "${BWhite}${On_Red}\r!!! TBD !!! -> $(TBD) (`pwd | awk -F/ '{print $$(NF-3)\"/\"$$(NF-1)\"/\"$$(NF)}'`) !!! TBD !!!${Color_Off}"
-
-
-#---------------------------------------------------------------------------
-prebuilt-recursive:
-	$(AM_MK_HUSH)list='$(SUBDIRS)'; for subdir in $$list; do \
-		($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) install_prebuilt); \
-		test $$? -eq 0 || exit 1; \
-	done
-
-install_prebuilt: check-sdk prebuilt-recursive
-	$(AM_MK_HUSH)test -z "$(PKGSRC_TGT)"  || echo " -> Building prebuilt package for subcomponent [$(SUBCOMP_NAME)]"
-	$(AM_MK_HUSH)test -z "$(PKGSRC_TGT)"  || $(MAKE) $(AM_MAKEFLAGS) install-prebuilt || exit 1
-
 
 #---------------------------------------------------------------------------
 install_bins-recursive:
