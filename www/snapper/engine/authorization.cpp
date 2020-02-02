@@ -380,10 +380,10 @@ int PROTOCOL::do_login_x86(char *service, char *user, char *pwd, char *family, c
 {
     //fake pam data
     map<string, string> account;
-    account["USERID"] = "PASSW0RD";
-    account["USERID0"] = "PASSWORD0";
-    account["USERID1"] = "PASSWORD1";
-    account["USERID2"] = "PASSWORD2";
+    account["USERID"] = "redf1sh";
+    account["USERID0"] = "redf1sh0";
+    account["USERID1"] = "redf1sh1";
+    account["USERID2"] = "redf1sh2";
     static unsigned int pamhdlr_pool = 0x12345670;
     static unsigned int session_pool = 0x100;
 

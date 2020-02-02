@@ -144,6 +144,8 @@ static pthread_mutex_t prefetch_lock=PTHREAD_MUTEX_INITIALIZER;
         sr_provider->reset_obj();
 
         pthread_mutex_unlock( &prefetch_lock );
+
+        return RFRC_SUCCESS;
     }
         
 

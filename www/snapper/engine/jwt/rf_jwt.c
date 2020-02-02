@@ -132,13 +132,39 @@ char *rf_auth_token_enc(char *uuid)
     unsigned char *plaintext = (unsigned char *)rf_jwt_encode(uuid);
     unsigned char *ciphertext = NULL;
     char *base64_token = NULL;
-    EVP_CIPHER_CTX ctx;
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+#else
+    EVP_CIPHER_CTX ctx; 
+#endif
 
     if(plaintext == NULL)
         return NULL;
     plaintext_len = strlen((char *)plaintext);
     ciphertext = malloc(MAX_AUTH_TOKEN_STR);
 
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX_init(ctx);
+    if (!EVP_EncryptInit(ctx, EVP_aes_128_cbc(), aes_key, aes_iv))
+    {
+        printf("%s - EVP_EncryptInit failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto CLEAN;
+    }
+    if (!EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+    {
+        printf("%s - EVP_EncryptUpdate failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto CLEAN;
+    }
+    ciphertext_len = len;
+
+    if (!EVP_EncryptFinal(ctx, ciphertext+len, &len))
+    {
+        printf("%s - EVP_EncryptFinal failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto CLEAN;
+    }
+    ciphertext_len += len;
+
+#else
     EVP_CIPHER_CTX_init(&ctx);
     if (!EVP_EncryptInit(&ctx, EVP_aes_128_cbc(), aes_key, aes_iv))
     {
@@ -159,13 +185,21 @@ char *rf_auth_token_enc(char *uuid)
     }
     ciphertext_len += len;
 
+#endif
+
     base64_token = malloc(MAX_AUTH_TOKEN_STR);
     jwt_Base64encode(base64_token, (const char *)ciphertext, ciphertext_len);
     printf("jwt plaintext:\n%s\n", plaintext);
     printf("auth token:\n%s\n", base64_token);
 
 CLEAN:
+
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX_free(ctx);
+#else
     EVP_CIPHER_CTX_cleanup(&ctx);
+#endif
+
     if(plaintext)
         free(plaintext);
 
@@ -185,7 +219,11 @@ int rf_auth_token_dec(char *token, char *uuid_o)
     int ciphertext_len = 0;
     unsigned char *aes_key = (unsigned char *)AES_KEY;
     unsigned char *aes_iv  = (unsigned char *)AES_IV;
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+#else
     EVP_CIPHER_CTX ctx;
+#endif
 
     if(token == NULL || strlen(token) == 0 || strlen(token) > 512) // assume < 512. otherwise overflow possibly
         return -1;
@@ -195,6 +233,28 @@ int rf_auth_token_dec(char *token, char *uuid_o)
     plaintext = malloc(MAX_AUTH_TOKEN_STR);
     memset(plaintext, 0, MAX_AUTH_TOKEN_STR);
 
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX_init(ctx);
+    EVP_CIPHER_CTX_set_padding(ctx, 0);
+    if (!EVP_DecryptInit(ctx, EVP_aes_128_cbc(), aes_key, aes_iv))
+    {
+        printf("%s - EVP_DecryptInit failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto DONE;
+    }
+    if (!EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
+    {
+        printf("%s - EVP_DecryptUpdate failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto DONE;
+    }
+    plaintext_len = len;
+
+    if (!EVP_DecryptFinal(ctx, plaintext+len, &len))
+    {
+        printf("%s - EVP_DecryptFinal failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
+        goto DONE;
+    }
+
+#else
     EVP_CIPHER_CTX_init(&ctx);
     EVP_CIPHER_CTX_set_padding(&ctx, 0);
     if (!EVP_DecryptInit(&ctx, EVP_aes_128_cbc(), aes_key, aes_iv))
@@ -214,6 +274,9 @@ int rf_auth_token_dec(char *token, char *uuid_o)
         printf("%s - EVP_DecryptFinal failed: %s\n", __FUNCTION__, ERR_error_string(ERR_get_error(), NULL));
         goto DONE;
     }
+
+#endif
+
     plaintext_len += len;
     plaintext[plaintext_len] = 0;
 
@@ -221,7 +284,12 @@ int rf_auth_token_dec(char *token, char *uuid_o)
     printf("jwt plaintext dec: %d\n%s\n", ret, (char *)plaintext);
 
 DONE:
+
+#if (OPENSSL_VERSION_NUMBER >= 0x10101000L)
+    EVP_CIPHER_CTX_free(ctx);
+#else
     EVP_CIPHER_CTX_cleanup(&ctx);
+#endif
 
     if(ciphertext)
         free(ciphertext);

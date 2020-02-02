@@ -298,8 +298,17 @@ static PyMethodDef connector_funcs[] = {
     {NULL, NULL, 0, NULL}
 };
 
-void init_connector(void)
+static struct PyModuleDef connectormodule = {
+   PyModuleDef_HEAD_INIT,
+   "_connector",   /* name of module */
+   NULL,           /* module documentation, may be NULL */
+   -1,             /* size of per-interpreter state of the module,
+                      or -1 if the module keeps state in global variables. */
+   connector_funcs
+};
+
+PyMODINIT_FUNC PyInit__connector(void)
 {
-    Py_InitModule("_connector", connector_funcs);
+    return PyModule_Create(&connectormodule);
 }
 

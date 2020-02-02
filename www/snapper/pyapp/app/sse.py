@@ -17,11 +17,11 @@ app = create_app()
 
 @app.before_request
 def before_request():
-    print(">>>> %s  " % request.path)
+    print((">>>> %s  " % request.path))
 
 @app.after_request
 def after_request(response):
-    print("<<<< %s  " % request.path)
+    print(("<<<< %s  " % request.path))
     return response
 
 @app.route('/')

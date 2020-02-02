@@ -17,10 +17,10 @@ def pre_fork(server, worker):
     pass
 
 def worker_int(worker):
-    print("** worker %d INT/QUIT signal" % ( os.getpid() ))
+    print(("** worker %d INT/QUIT signal" % ( os.getpid() )))
 
 def worker_abort(worker):
-    print("** worker %d ABRT signal" % ( os.getpid() ))
+    print(("** worker %d ABRT signal" % ( os.getpid() )))
 
 def child_exit(server, worker):
-    print("** child worker %d exit" % ( worker.pid ))
+    print(("** child worker %d exit" % ( worker.pid )))

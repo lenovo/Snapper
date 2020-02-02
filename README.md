@@ -9,24 +9,25 @@ serving Redfish schema upgrade and specification update.
 
 Dependencies:
 --------------------------------
-The simulator depends on python 2.7, nginx as https server, gunicorn as 
+The simulator depends on python 3.6, nginx as https server, gunicorn as 
 application server. It also depends on following Python modules installed
-in your system:
-- certifi(2018.10.15)
-- click(7.0)
+in your system (specified version or above preferred):
 - flask(1.0.2)
+- werkzeug(0.14.1)
+- requests(2.11.0)
 - flask_restful(0.3.6)
 - gevent(1.3.6)
 - jinja2(2.10)
-- markupsafe(1.0)
 - redis(2.10.6)
-- requests(2.11.0)
+- Cython(for setup.py)
+- markupsafe(1.0)
 - urllib3(1.24)
-- werkzeug(0.14.1)
 - ConcurrentLogHandler(0.9.1)
 - itsdangerous(0.15)
 - portalocker(0.3)
 - six(1.11.0)
+- certifi(2018.10.15)
+- click(7.0)
 
 additionally it has dependency on and uses following source code
 - odatacpp-server
@@ -37,23 +38,23 @@ additionally it has dependency on and uses following source code
 
 Installation
 --------------------------------
-download nginx source code and install:
+download nginx source code (1.16 preferred) and install:
 - ./configure --sbin-path=/usr/sbin/nginx --with-http_ssl_module
 - make
 - make install
 
 install gunicorn:
-- pip install gunicorn
+- pip3 install gunicorn
 
 install gevent:
-- pip install gevent
+- pip3 install gevent
 
 install libraries:
-- yum install python-devel boost-devel pam-devel jansson-devel e2fsprogs-devel  libcurl-devel libuuid-devel libuuid libxml2 sqlite-devel
+- yum install python3-devel boost-devel pam-devel jansson-devel e2fsprogs-devel libcurl-devel libuuid-devel libuuid libxml2 libxml2-devel sqlite-devel zlib zlib-devel openssl openssl-devel pcre pcre-devel
 
 install other Python modules like
-- pip install flask
-- pip install requests
+- pip3 install flask
+- pip3 install requests
 - ...
 
 
@@ -64,6 +65,7 @@ prepare schema files and mockup data:
 - put 2018.3 json schema files under www/snapper/pyapp/schema_json/
 - put 2018.3 CSDL schema files under www/snapper/pyapp/schema_xml/
 - if you want to use mockup data, put them under www/snapper/pyapp/mockup/
+- configure bnp/buildtools/bmc-rules.mk if it's mismatched with your environment setup
 
 build code:
 - ./bnp/makebmc pristine
@@ -78,11 +80,12 @@ environment already contains these modules, the simulator search Python path in 
 Configuration and Custom Implementation
 --------------------------------
 configure nginx:
-1)www/rootfs/etc/nginx/nginx.conf - general setting for http server with http service on port 8080
-2)www/rootfs/etc/nginx/snapper_server.conf - snapper https service on port 8000
+- www/rootfs/etc/nginx/nginx.conf: general setting for http server with http service on port 8080
+- www/rootfs/etc/nginx/snapper_server.conf: snapper https service on port 8000
+- note the PEM pass phrase of the encrypted key file is 1qaz@WSX
 
 configure gunicorn:
-www/rootfs/etc/snapper.conf.py - WSGI server settings. it can also be launched as lightweight http server
+- www/rootfs/etc/snapper.conf.py: WSGI server settings. it can also be launched as lightweight http server
 
 implement resource or use mockup data:
 - you can create schema implementation file as samples under www/snapper/engine/providers/
@@ -98,6 +101,6 @@ Running Snapper
 - sudo ./bin/appservice.sh start
 
 the Snapper Redfish service is running with your implementation or mockup data over HTTPS (port 8000).
-default username 'USERID', password 'PASSW0RD'. debugging log is /tmp/gunicorn_snapper.log
+default username 'USERID', password 'redf1sh'. debugging log is /tmp/gunicorn_snapper.log
 
 

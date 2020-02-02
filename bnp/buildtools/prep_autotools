@@ -53,8 +53,11 @@ copy_sdk_files()
 
     #if [ "$BMC_SDK" = "none" ]; then
     if [ true ]; then
-        cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/config/ltmain.sh ${M4CONFIGDIR}
-	    test $? -ne 0 && cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/build-aux/ltmain.sh ${M4CONFIGDIR}	
+        if [ -e ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/config/ltmain.sh ]; then
+            cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/config/ltmain.sh ${M4CONFIGDIR}
+        else
+            cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/build-aux/ltmain.sh ${M4CONFIGDIR}
+        fi
     else
         cp -u ${OECORE_NATIVE_SYSROOT}/usr/share/libtool/build-aux/ltmain.sh ${M4CONFIGDIR}
     fi

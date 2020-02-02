@@ -56,11 +56,9 @@ ifeq ($(IMM_DEBUG),1)
 AM_CPPFLAGS 	+= -g
 endif
 AM_CPPFLAGS     += -I$(EXPORT_DIR)/include -I$(EXPORT_DIR)/usr/include -I$(STUB_DIR)/include
-AM_CPPFLAGS     += -I$(EXPORT_DIR)/include/ossc
-#AM_CPPFLAGS     += -I$(EXPORT_INCDIR)/
 AM_CPPFLAGS     += -I$(XROOT)/usr/include
 AM_CPPFLAGS     += -I$(XROOT)/usr/include/libxml2
-AM_CPPFLAGS     += -I$(XROOT)/usr/include/python2.7
+AM_CPPFLAGS     += -I$(XROOT)/usr/include/python3.6m
 #AM_CPPFLAGS     += -I${SDKTARGETSYSROOT}/usr/include/libxml2
 #AM_CPPFLAGS     += $(GNUINC_DIRS)
 

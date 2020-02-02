@@ -10,7 +10,7 @@ EXPORT_SUBDIR = snapper
 #---------------------------------------------------------------------------
 SNAPPER_DIR=$(PKGSRC_DIR)/var/www/snapper
 SNAPPER_APPDIR=$(SNAPPER_DIR)/app
-PYTHON=python
+PYTHON=python3
 
 snapperCPPFLAGS=$(AM_CPPFLAGS) -fPIC -Wno-strict-prototypes \
                    -Wno-unused-value \
@@ -18,7 +18,7 @@ snapperCPPFLAGS=$(AM_CPPFLAGS) -fPIC -Wno-strict-prototypes \
                    -Wno-unused-local-typedefs
 snapperLDFLAGS=$(CC) -shared $(AM_LDFLAGS)
 
-RFDIRS = bin schema_xml schema_json openmodules mockup
+RFDIRS = schema_xml schema_json openmodules mockup
 #---------------------------------------------------------------------------
 install-data-local:
 	$(AM_MK_HUSH)install -$(AM_IN_HUSH)d $(SNAPPER_DIR)
@@ -40,7 +40,7 @@ install-exec-local:
 	    echo "******setup.py failed to build snapper code******. Please check $(srcdir)/rf.log"; exit 1; \
 	    fi; \
 	    $(PYTHON) -m compileall . >> ./rf.log 2>&1; \
-	    cp -rf ./build/lib*/app/* $(SNAPPER_APPDIR); find $(SNAPPER_APPDIR) -name "*.pyy" | xargs rm -f
+	    cp -rf ./build/lib*/app/* $(SNAPPER_APPDIR)
 
 
 clean-local:

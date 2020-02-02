@@ -1,3 +1,9 @@
 build
+__pycache__
 *.log
 *.pyc
+schema_json/*.json
+schema_xml/*.xml
+schema_xml/OemShim/*.xml
+mockup/**/*.json
+mockup/**/*.xml

@@ -13,7 +13,7 @@ from logging import StreamHandler, DEBUG, Formatter
 from logging.handlers import RotatingFileHandler
 from cloghandler import ConcurrentRotatingFileHandler
 from datetime import datetime, timedelta
-import thread
+import threading
 import time
 
 from flask import Flask, request, current_app, abort, redirect
@@ -149,7 +149,8 @@ def create_app(config):
     # init server side event
     app.register_blueprint(sse, url_prefix=config.EVENTSTREAM_URL)
 
-    thread.start_new_thread( SessionTimerThread, ("snapper session timer",3) )
+    thr_session = threading.Thread(target=SessionTimerThread, name="SessionThread", args=("snapper session timer", 3))
+    thr_session.start()
 
     # Restful api
     app.api = Api(app, serve_challenge_on_401=False)

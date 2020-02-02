@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import unicode_literals
+
 
 import flask
 import os
@@ -84,7 +84,7 @@ class Message(object):
             kwargs["retry"] = self.retry
         kwargs_repr = "".join(
             ", {key}={value!r}".format(key=key, value=value)
-            for key, value in kwargs.items()
+            for key, value in list(kwargs.items())
         )
         return "{classname}({data!r}{kwargs})".format(
             classname=self.__class__.__name__,

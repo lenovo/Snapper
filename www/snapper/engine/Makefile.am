@@ -145,7 +145,7 @@ librfmon_clt_la_SOURCES = monitor/rfmon_clt.c
 py_snapper_ldflags = \
    -lxml2 -lboost_filesystem -lboost_system -lboost_locale \
    -lodata -lsnapper_engine -lsnapper_provider -lsnapper_datainterface -lsnapper_jwt -lrfmon_clt -ljansson -lstub \
-   -lcurl -lboost_thread -lboost_thread-mt
+   -lcurl -lboost_thread
 
 snapper_helper_ldflags = \
    -lrfmon_clt  -lstub -luuid -lm -lcurl
@@ -156,7 +156,7 @@ snapper_helper_ldflags = \
 py_bin_ldflags = \
    -lxml2 -lboost_filesystem -lboost_system -lboost_locale \
    -lodata -lsnapper_engine -lsnapper_provider -lsnapper_datainterface -lsnapper_jwt -lrfmon_clt -ljansson -lstub \
-   -luuid -lpam -lcurl -lboost_thread -lboost_thread-mt
+   -luuid -lpam -lcurl -lboost_thread
 
 #snapper_monitor_CPPFLAGS = $(AM_CPPFLAGS) -fPIC -I $(top_srcdir)/snapper/include $(ODATA_SUPPRESSIONS)
 #snapper_monitor_SOURCES  = monitor/monitor.cpp monitor/task_sm.cpp monitor/trigger.cpp monitor/trigger_config.cpp monitor/eventing.cpp

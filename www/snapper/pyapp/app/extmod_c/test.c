@@ -31,17 +31,17 @@ static PyMethodDef test_funcs[] = {
 #ifdef IS_PY3K
 static struct PyModuleDef testmodule = {
    PyModuleDef_HEAD_INIT,
-   "test",   /* name of module */
-   NULL, /* module documentation, may be NULL */
-   -1,       /* size of per-interpreter state of the module,
-                or -1 if the module keeps state in global variables. */
+   "_test",     /* name of module */
+   NULL,       /* module documentation, may be NULL */
+   -1,         /* size of per-interpreter state of the module,
+                  or -1 if the module keeps state in global variables. */
    test_funcs
 };
-
-PyMODINIT_FUNC PyInit_test(void)
+PyMODINIT_FUNC PyInit__test(void)
 {
     return PyModule_Create(&testmodule);
 }
+
 #else
 void init_test(void)
 {
